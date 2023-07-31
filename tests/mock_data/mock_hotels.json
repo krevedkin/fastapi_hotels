@@ -1,0 +1,69 @@
+[
+    {
+        "name": "Cosmos Collection Altay Resort",
+        "location": "Республика Алтай, Майминский район, село Урлу-Аспак, Лесхозная улица, 20",
+        "services": ["Wi-Fi", "Бассейн", "Парковка", "Кондиционер в номере"],
+        "rooms_quantity": 15,
+        
+        "image_url": "http://localhost:8000/static/images/1.png",
+        "stars" : 5,
+        "description": "Солнечное местечко",
+        "city": "Ростов-на-Дону",
+        "address": "ул. Ленина 46"
+    },
+    {
+        "name": "Skala",
+        "location": "Республика Алтай, Майминский район, поселок Барангол, Чуйская улица 40а",
+        "services": ["Wi-Fi", "Парковка"],
+        "rooms_quantity": 23,
+        "image_url": "http://localhost:8000/static/images/2.png",
+        "stars" : 4,
+        "description": "не очень солнечное местечко",
+        "city": "Москва",
+        "address": "ул. Ленина 40"
+    },
+    {
+        "name": "Ару-Кёль",
+        "location": "Республика Алтай, Турочакский район, село Артыбаш, Телецкая улица, 44А",
+        "services": ["Парковка"],
+        "rooms_quantity": 30,
+        "image_url": "http://localhost:8000/static/images/3.png",
+        "stars" : 3,
+        "description": "капец как хреново",
+        "city": "Санкт-Петербург",
+        "address": "ул. Ватрушкина 152"
+    },
+    {
+        "name": "Гостиница Сыктывкар",
+        "location": "Республика Коми, Сыктывкар, Коммунистическая улица, 67",
+        "services": ["Wi-Fi", "Парковка", "Тренажёрный зал"],
+        "rooms_quantity": 55,
+        "image_url": "http://localhost:8000/static/images/4.png",
+        "stars" : 2,
+        "description": "Дешево и сердито",
+        "city": "Кемерово",
+        "address": "ул. Красного октября 37"
+    },
+    {
+        "name": "Palace",
+        "location": "Республика Коми, Сыктывкар, Первомайская улица, 62",
+        "services": ["Wi-Fi", "Парковка", "Кондиционер в номере"],
+        "rooms_quantity": 22,
+        "image_url": "http://localhost:8000/static/images/2.png",
+        "stars" : 1,
+        "description": "Отель начального уровня",
+        "city": "Пенза",
+        "address": "ул. Красноармейская 63"
+    },
+    {
+        "name": "Bridge Resort",
+        "location": "посёлок городского типа Сириус, Фигурная улица, 45",
+        "services": ["Wi-Fi", "Парковка", "Кондиционер в номере", "Тренажёрный зал"],
+        "rooms_quantity": 45,
+        "image_url": "http://localhost:8000/static/images/2.png",
+        "stars" : 5,
+        "description": "Крутое место",
+        "city": "Москва",
+        "address": "ул. Безымянная 30"
+    }
+]
