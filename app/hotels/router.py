@@ -1,30 +1,25 @@
+from asyncio import sleep
 from datetime import date
-
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.params import Query
+from fastapi_cache.decorator import cache
 
-from app.hotels.schemas import HotelDetailSchema, HotelFavoriteSchema, HotelSchema
-from app.hotels.dao import HotelsDAO
-from app.hotels.exceptions import (
-    FavoriteHotelAlreadyExistsDBexception,
-    FavoriteHotelAlreadyExistsHTTPException,
-    RecordDoesNotExists,
-)
 from app.auth.dependencies import get_current_user
 from app.auth.schemas import User
+from app.hotels.dao import HotelsDAO
+from app.hotels.exceptions import (FavoriteHotelAlreadyExistsDBexception,
+                                   FavoriteHotelAlreadyExistsHTTPException,
+                                   RecordDoesNotExists)
+from app.hotels.schemas import (HotelDetailSchema, HotelFavoriteSchema,
+                                HotelSchema)
 
 router = APIRouter(prefix="/hotels", tags=["Отели и комнаты"])
 
 
-@router.get("/test")
-async def test_endpoint():
-    # quey = await HotelsDAO()._build_query("2020-05-10", "2020-05-15")
-    return await HotelsDAO().test_request()
-
-
 @router.get("/cities")
+@cache(expire=15)
 async def get_locations(
     request: Request, user: Annotated[User, Depends(get_current_user)]
 ):
@@ -117,6 +112,7 @@ async def get_hotel(id: int, user: Annotated[User, Depends(get_current_user)]):
 
 
 @router.get("/", response_model=list[HotelSchema])
+@cache(15)
 async def get_hotels(
     date_from: date | None = None,
     date_to: date | None = None,

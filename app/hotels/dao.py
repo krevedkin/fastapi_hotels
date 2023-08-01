@@ -1,112 +1,18 @@
 from datetime import date
-from typing import Any
-from sqlalchemy import case, insert, select, func, or_, and_, delete
-from sqlalchemy.ext.asyncio import AsyncSession
+
+from sqlalchemy import and_, case, delete, func, insert, select
 from sqlalchemy.exc import IntegrityError
 
-from app.dao.base import BaseDAO
-from app.hotels.models import Hotels, HotelsUsers
-from app.database import async_session_maker
 from app.bookings.models import Bookings
-from app.hotels.rooms.models import Rooms
+from app.dao.base import BaseDAO
+from app.database import async_session_maker
 from app.hotels.exceptions import FavoriteHotelAlreadyExistsDBexception
+from app.hotels.models import Hotels, HotelsUsers
+from app.hotels.rooms.models import Rooms
 
 
 class HotelsDAO(BaseDAO):
     model = Hotels
-
-    # @classmethod
-    # async def get_hotels_by_location(cls, location: str, date_from, date_to):
-    #     async with async_session_maker() as session:
-    #         session: AsyncSession
-    #         booked_rooms_count = (
-    #             select(func.count().label("booked_rooms_count"))
-    #             .select_from(Bookings)
-    #             .where(
-    #                 or_(
-    #                     and_(
-    #                         Bookings.date_from >= date_from,
-    #                         Bookings.date_from <= date_to,
-    #                     ),
-    #                     and_(
-    #                         Bookings.date_from <= date_from,
-    #                         Bookings.date_from > date_to,
-    #                     ),
-    #                 )
-    #             )
-    #         ).as_scalar()
-
-    #         query = (
-    #             select(
-    #                 Hotels.id,
-    #                 Hotels.name,
-    #                 Hotels.location,
-    #                 Hotels.rooms_quantity,
-    #                 Hotels.services,
-    #                 Hotels.image_url,
-    #                 (Hotels.rooms_quantity - func.count(Bookings.room_id)).label(
-    #                     "rooms_left"
-    #                 ),
-    #             )
-    #             .join(Rooms, Hotels.id == Rooms.hotel_id)
-    #             .join(Bookings, Rooms.id == Bookings.room_id, isouter=True)
-    #             .where(
-    #                 and_(
-    #                     Hotels.location.ilike(f"%{location}%"),
-    #                     # type: ignore
-    #                     Hotels.rooms_quantity > booked_rooms_count,
-    #                 )
-    #             )
-    #             .group_by(
-    #                 Hotels.id,
-    #                 Hotels.name,
-    #                 Hotels.location,
-    #                 Hotels.rooms_quantity,
-    #                 Hotels.image_url,
-    #             )
-    #             .having(Hotels.rooms_quantity - func.count(Bookings.room_id) > 0)
-    #         )
-
-    #     result = await session.execute(query)
-    #     return result.mappings().all()
-
-    # @classmethod
-    # async def get_hotels(cls):
-    #     async with async_session_maker() as session:
-    #         query = select(
-    #             Hotels.id,
-    #             Hotels.name,
-    #             Hotels.location,
-    #             Hotels.image_url,
-    #             Hotels.stars,
-    #             Hotels.description,
-    #         )
-    #         result = await session.execute(query)
-    #         return result.mappings().all()
-
-    @classmethod
-    async def _build_query(cls, date_from, date_to):
-        async with async_session_maker() as session:
-            booked_rooms_count = (
-                select(func.count().label("booked_rooms_count"))
-                .select_from(Bookings)
-                .where(
-                    or_(
-                        and_(
-                            Bookings.date_from >= date_from,
-                            Bookings.date_from <= date_to,
-                        ),
-                        and_(
-                            Bookings.date_from <= date_from,
-                            Bookings.date_from > date_to,
-                        ),
-                    )
-                )
-            )
-            # r = await session.execute(booked_rooms_count)
-            # print(r.mappings().all())
-            print(booked_rooms_count)
-            # return booked_rooms_count
 
     @classmethod
     async def get_hotel_with_rooms(cls, hotel_id: int):

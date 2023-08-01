@@ -1,14 +1,12 @@
 from datetime import date
 
+from app.hotels.rooms.dao import RoomsDAO
 from app.hotels.rooms.schemas import HotelRoomsSchema
 from app.hotels.router import router
-from app.hotels.rooms.dao import RoomsDAO
 
 
-@router.get("/{hotel_id}/rooms")
-async def get_hotel_rooms(
-    hotel_id: int, date_from: date, date_to: date
-) -> list[HotelRoomsSchema]:
+@router.get("/{hotel_id}/rooms", response_model=list[HotelRoomsSchema])
+async def get_hotel_rooms(hotel_id: int, date_from: date, date_to: date):
     return await RoomsDAO.get_hotel_rooms(hotel_id, date_from, date_to)
 
 

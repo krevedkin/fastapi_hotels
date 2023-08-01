@@ -1,13 +1,8 @@
 from typing import Any
-from sqlalchemy.orm import mapped_column, Mapped  # relationship
-from sqlalchemy import (
-    UniqueConstraint,
-    CheckConstraint,
-    ForeignKey,
-    String,
-    JSON,
-    Integer,
-)
+
+from sqlalchemy import (JSON, CheckConstraint, ForeignKey, Integer, String,
+                        UniqueConstraint)
+from sqlalchemy.orm import Mapped, mapped_column  # relationship
 
 from app.database import Base
 

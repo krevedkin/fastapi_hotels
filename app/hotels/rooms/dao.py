@@ -1,21 +1,28 @@
+import typing
 from datetime import date
 
-from sqlalchemy import select, func, and_, or_
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.bookings.models import Bookings
 from app.dao.base import BaseDAO
 from app.database import async_session_maker
-from app.hotels.rooms.models import Rooms
 from app.hotels.models import Hotels
-from app.bookings.models import Bookings
+from app.hotels.rooms.models import Rooms
+
+if typing.TYPE_CHECKING:
+    from typing import Sequence
+
+    from sqlalchemy import RowMapping
 
 
 class RoomsDAO(BaseDAO):
     model = Rooms
 
     @classmethod
-    async def get_hotel_rooms(cls, hotel_id: int, date_from: date,
-                              date_to: date):
+    async def get_hotel_rooms(
+        cls, hotel_id: int, date_from: date, date_to: date
+    ) -> "Sequence[RowMapping]":
         async with async_session_maker() as session:
             session: AsyncSession
 
@@ -30,14 +37,11 @@ class RoomsDAO(BaseDAO):
                     Rooms.services,
                     Rooms.price,
                     Rooms.quantity,
-                    Rooms.image_id,
-                    (Rooms.quantity - func.count(Bookings.room_id))
-                    .label("rooms_left"),
-                    (Rooms.price * days).label("total_price")
+                    Rooms.image_url,
+                    (Rooms.quantity - func.count(Bookings.room_id)).label("rooms_left"),
+                    (Rooms.price * days).label("total_price"),
                 )
-                .join(
-                    Rooms, Rooms.hotel_id == Hotels.id
-                )
+                .join(Rooms, Rooms.hotel_id == Hotels.id)
                 .join(
                     Bookings,
                     and_(
@@ -45,15 +49,15 @@ class RoomsDAO(BaseDAO):
                         or_(
                             and_(
                                 Bookings.date_from >= date_from,
-                                Bookings.date_from <= date_to
+                                Bookings.date_from <= date_to,
                             ),
                             and_(
                                 Bookings.date_from <= date_from,
-                                Bookings.date_to > date_to
-                            )
-                        )
+                                Bookings.date_to > date_to,
+                            ),
+                        ),
                     ),
-                    isouter=True
+                    isouter=True,
                 )
                 .where(Hotels.id == hotel_id)
                 .group_by(
@@ -63,9 +67,8 @@ class RoomsDAO(BaseDAO):
                     Rooms.description,
                     Rooms.price,
                     Rooms.quantity,
-                    Rooms.image_id,
+                    Rooms.image_url,
                 )
-
             )
 
             result = await session.execute(query)

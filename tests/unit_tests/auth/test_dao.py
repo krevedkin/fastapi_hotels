@@ -43,5 +43,5 @@ async def test_add_refresh_token(session: AsyncSession):
     assert result.expire == expire
 
     refresh_session = await RefreshSessionsDAO().get_refresh_session(token)
-
+    assert refresh_session is not None
     assert refresh_session.refresh_token == result.refresh_token
