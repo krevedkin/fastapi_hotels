@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, UUID4, constr
+from pydantic import BaseModel, EmailStr, UUID4, Field
 
 
 class AccessToken(BaseModel):
@@ -19,4 +19,4 @@ class User(BaseModel):
 
 class UserRegister(BaseModel):
     email: EmailStr
-    password: constr(min_length=6)
+    password: str = Field(min_length=6)
