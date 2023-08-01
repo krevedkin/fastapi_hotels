@@ -1,12 +1,12 @@
 from datetime import datetime
 from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
+from app.auth.models import RefreshSessions, Users
 from app.dao.base import BaseDAO
-from app.auth.models import Users
 from app.database import async_session_maker
-from app.auth.models import RefreshSessions
 
 
 class UsersDAO(BaseDAO):
@@ -57,7 +57,7 @@ class RefreshSessionsDAO(BaseDAO):
     @classmethod
     async def get_refresh_session(
         cls,
-        refresh_token: str,
+        refresh_token: UUID,
     ) -> RefreshSessions | None:
         async with async_session_maker() as session:
             query = select(RefreshSessions).where(

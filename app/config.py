@@ -1,4 +1,5 @@
 from typing import Literal
+
 from pydantic import BaseSettings, PostgresDsn
 
 
@@ -32,16 +33,5 @@ class Settings(BaseSettings):
         env_file = ".dev.env"
 
 
-# def get_settings() -> Settings:
-#     mode = os.environ.get("HOTELS_APP_MODE")
-#     # if mode == "DEV":
-#     #     return Settings(_env_file=".env")
-#     if mode == "TEST":
-#         return Settings(_env_file=".env-test")
-#     # return Settings(_env_file=".env-test")
-
-#     raise FileNotFoundError("Не найден файл .env с настройками приложения")
-
-
-settings = Settings()
+settings = Settings()  # type: ignore
 print(settings.MODE)

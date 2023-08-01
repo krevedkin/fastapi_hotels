@@ -1,14 +1,16 @@
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
+
 from fastapi import Response
-from passlib.context import CryptContext
 from jose import jwt
-from sqlalchemy.exc import IntegrityError  # sqlalchemy.exc.IntegrityError:
-from app.config import settings
+from passlib.context import CryptContext
+from sqlalchemy.exc import IntegrityError
+
 from app.auth.dao import RefreshSessionsDAO, UsersDAO
+from app.auth.exceptions import UserAlreadyExistsHTTPException
 from app.auth.models import Users
 from app.auth.schemas import AccessToken, RefreshToken
-from app.auth.exceptions import UserAlreadyExistsHTTPException
+from app.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

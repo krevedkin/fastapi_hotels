@@ -1,11 +1,13 @@
 from typing import Annotated
+
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
-from app.config import settings
-from app.auth.utils import get_user
-from app.auth.exceptions import IncorrectTokenFormatException, UserNotFoundHTTPException
+from jose import JWTError, jwt
 
+from app.auth.exceptions import (IncorrectTokenFormatException,
+                                 UserNotFoundHTTPException)
+from app.auth.utils import get_user
+from app.config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="auth/token"

@@ -1,15 +1,18 @@
 import os
-from loguru import logger
+
 import uvicorn
-
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.bookings.router import router as bookings_router
-from app.hotels.rooms.router import router as hotels_router
+from fastapi.staticfiles import StaticFiles
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_cache.decorator import cache
+from loguru import logger
+from redis import asyncio as aioredis
 
 from app.auth.router import router as auth_router
+from app.bookings.router import router as bookings_router
+from app.hotels.rooms.router import router as hotels_router
 
 app = FastAPI()
 
@@ -31,6 +34,16 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def startup():
+    redis = aioredis.from_url(
+        "redis://localhost", encoding="utf-8", decode_responses=True
+    )
+    FastAPICache.init(RedisBackend(redis), prefix="cache")
+
+
 if __name__ == "__main__":
     logger.info(f"App running in mode: {os.environ.get('MODE')}")
     uvicorn.run(app="main:app", host="127.0.0.1", port=8000, reload=True)

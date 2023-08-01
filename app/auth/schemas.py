@@ -1,5 +1,6 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, UUID4, Field
+
+from pydantic import UUID4, BaseModel, EmailStr, Field
 
 
 class AccessToken(BaseModel):
