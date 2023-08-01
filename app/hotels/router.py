@@ -1,4 +1,3 @@
-from asyncio import sleep
 from datetime import date
 from typing import Annotated
 
@@ -9,11 +8,12 @@ from fastapi_cache.decorator import cache
 from app.auth.dependencies import get_current_user
 from app.auth.schemas import User
 from app.hotels.dao import HotelsDAO
-from app.hotels.exceptions import (FavoriteHotelAlreadyExistsDBexception,
-                                   FavoriteHotelAlreadyExistsHTTPException,
-                                   RecordDoesNotExists)
-from app.hotels.schemas import (HotelDetailSchema, HotelFavoriteSchema,
-                                HotelSchema)
+from app.hotels.exceptions import (
+    FavoriteHotelAlreadyExistsDBexception,
+    FavoriteHotelAlreadyExistsHTTPException,
+    RecordDoesNotExists,
+)
+from app.hotels.schemas import HotelDetailSchema, HotelFavoriteSchema, HotelSchema
 
 router = APIRouter(prefix="/hotels", tags=["Отели и комнаты"])
 
