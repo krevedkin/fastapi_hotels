@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Annotated
+from typing import Annotated, TYPE_CHECKING
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request, Response, status
@@ -7,15 +7,19 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.auth.dao import RefreshSessionsDAO, UsersDAO
 from app.auth.dependencies import get_current_user
-from app.auth.exceptions import (InvalidCredentialsHTTPException,
-                                 InvalidRefreshTokenHTTPException,
-                                 NoRefreshSessionHTTPException,
-                                 NoRefreshTokenHTTPException,
-                                 RefreshTokenExpriredException,
-                                 UserNotFoundHTTPException)
+from app.auth.exceptions import (
+    InvalidCredentialsHTTPException,
+    InvalidRefreshTokenHTTPException,
+    NoRefreshSessionHTTPException,
+    NoRefreshTokenHTTPException,
+    RefreshTokenExpriredException,
+    UserNotFoundHTTPException,
+)
 from app.auth.schemas import AccessToken, User, UserRegister
+from app.auth.models import Users
 from app.auth.utils import authenticate_user, register_user, set_tokens
 from app.config import settings
+
 
 router = APIRouter(prefix="/auth", tags=["Аутентификация"])
 
@@ -41,7 +45,7 @@ async def get_access_token(
     if not user:
         raise InvalidCredentialsHTTPException
 
-    if isinstance(user, User):
+    if isinstance(user, Users):
         return await set_tokens(response, user)
 
 
