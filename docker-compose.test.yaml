@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - web:/code
+    depends_on:
+      - db
+      - redis
+    command: ["alembic", "upgrade", "head"]
+  
+  db:
+    image: postgres:15
+    container_name: test_hotels_db
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - .test.env
+    ports:
+      - 5431:5432
+    volumes:
+      - database:/var/lib/postgresql/data 
+
+  redis:
+    image: redis:7
+    container_name: hotels_redis
+    volumes:
+      - cache:/data
+
+  celery:
+    build: 
+      context: .
+    container_name: hotels_celery
+    command: ["/code/docker/celery.sh", "celery"]
+    depends_on:
+      - redis
+    env_file:
+      - .dev.env
+  
+  
