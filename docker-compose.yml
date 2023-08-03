@@ -1,13 +1,13 @@
 version: "3.9"
 services:
-  fastapi_app:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - 8000:8000
     volumes:
-      - .:/code
+      - web:/code
     depends_on:
       - db
       - redis
@@ -28,12 +28,30 @@ services:
   redis:
     image: redis:7
     container_name: hotels_redis
+    volumes:
+      - cache:/data
 
+  celery:
+    build: 
+      context: .
+    container_name: hotels_celery
+    command: ["/code/docker/celery.sh", "celery"]
+    depends_on:
+      - redis
+    env_file:
+      - .dev.env
 
+  flower:
+    build: 
+      context: .
+    container_name: hotels_flower
+    command: ["/code/docker/celery.sh", "flower"]
+    depends_on:
+      - celery
+    ports:
+      - 5555:5555
+  
 volumes:
   database:
-  
-
-
-  
-
+  web:
+  cache:  
