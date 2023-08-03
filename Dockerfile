@@ -1,7 +1,10 @@
 FROM python:3.10
 
-RUN mkdir /code
+ARG CONTEXT=dev
 
+RUN echo "CONTEXT=$CONTEXT"
+
+RUN mkdir /code
 WORKDIR /code
 
 RUN pip install poetry 
@@ -10,7 +13,9 @@ RUN poetry config virtualenvs.create false
 
 COPY pyproject.toml poetry.lock /code/
 
-RUN poetry install --no-dev
+# RUN poetry install --no-dev
+
+RUN [ "$CONTEXT" = "dev" ] && poetry install --no-dev || poetry install
 
 COPY . .
 

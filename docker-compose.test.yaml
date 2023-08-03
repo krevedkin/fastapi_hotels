@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  test_web:
+    container_name: test_web
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CONTEXT: "test"
+    ports:
+      - 8001:8000
+    volumes:
+      - test_web:/code
+    env_file:
+      - .test.env
+    depends_on:
+      - test_db
+      - test_redis
+    command: "/code/docker/app.sh"
+
+  
+  test_db:
+    image: postgres:15
+    container_name: test_hotels_db
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - .test.env
+    ports:
+      - 5430:5432
+    tmpfs:
+      - /var/lib/postgresql/data
+    
+
+  test_redis:
+    image: redis:7
+    container_name: test_hotels_redis
+    tmpfs:
+      - /data
+
+  test_celery:
+    build: 
+      context: .
+      args:
+        CONTEXT: "test"
+    container_name: test_hotels_celery
+    command: ["/code/docker/celery.sh", "celery"]
+    depends_on:
+      - test_redis
+    env_file:
+      - .test.env
+
+volumes:
+  test_web:
