@@ -9,7 +9,6 @@ services:
     volumes:
       - .:/code
       - /code/.venv
-      -
     depends_on:
       - db
       - redis
