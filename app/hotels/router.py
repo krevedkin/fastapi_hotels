@@ -3,7 +3,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.params import Query
-from fastapi_cache.decorator import cache
 
 from app.auth.dependencies import get_current_user
 from app.auth.schemas import User
@@ -19,7 +18,6 @@ router = APIRouter(prefix="/hotels", tags=["Отели и комнаты"])
 
 
 @router.get("/cities")
-@cache(expire=15)
 async def get_locations(
     request: Request, user: Annotated[User, Depends(get_current_user)]
 ):
@@ -112,8 +110,8 @@ async def get_hotel(id: int, user: Annotated[User, Depends(get_current_user)]):
 
 
 @router.get("/", response_model=list[HotelSchema])
-@cache(15)
 async def get_hotels(
+    user: Annotated[User, Depends(get_current_user)],
     date_from: date | None = None,
     date_to: date | None = None,
     city: str | None = None,
@@ -127,6 +125,7 @@ async def get_hotels(
             status_code=400, detail="max_price cannot be less than min_price"
         )
     return await HotelsDAO().get_hotels(
+        user_id=user.id,
         city=city,
         stars=stars,
         min_price=min_price,

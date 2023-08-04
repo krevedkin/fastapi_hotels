@@ -36,6 +36,7 @@ class HotelsDAO(BaseDAO):
     @classmethod
     async def get_hotels(
         cls,
+        user_id: int,
         city: str | None,
         stars: int | None,
         min_price: int | None,
@@ -96,8 +97,9 @@ class HotelsDAO(BaseDAO):
 
             if favorites_only:
                 filters.append(
-                    HotelsUsers.id.isnot(None) if True else HotelsUsers.id.is_(None)
+                    HotelsUsers.id.isnot(None) if True else HotelsUsers.id.is_(None),
                 )
+                filters.append(HotelsUsers.user_id == user_id)
 
             if date_from and date_to:
                 bookings_query = (
