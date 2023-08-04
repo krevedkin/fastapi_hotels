@@ -10,7 +10,8 @@ services:
     ports:
       - 8001:8000
     volumes:
-      - test_web:/code
+      - .:/code
+      - /code/.venv
     env_file:
       - .test.env
     depends_on:
@@ -50,5 +51,4 @@ services:
     env_file:
       - .test.env
 
-volumes:
-  test_web:
+
