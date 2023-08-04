@@ -1,65 +1,34 @@
 import asyncio
 from datetime import datetime
-import json
+
 import pytest
-from sqlalchemy import insert, text
 from httpx import AsyncClient
+from sqlalchemy import insert, text
 
-from app.main import app as fastapi_app
-from app.database import Base, async_session_maker, engine
+from app.auth.models import Users  # noqa: F401
+from app.bookings.models import Bookings  # noqa: F401
 from app.config import settings
-from app.bookings.models import Bookings
-from app.auth.models import Users
-from app.hotels.models import Hotels
-from app.hotels.rooms.models import Rooms
-
-
-# @pytest.fixture(autouse=True, scope="session")
-# async def prepare_database():
-#     assert settings.MODE == "TEST"
-#     async with engine.begin() as conn:
-#         await conn.run_sync(Base.metadata.drop_all)
-#         await conn.run_sync(Base.metadata.create_all)
-
-#     def open_mock_json(model: str):
-#         with open(f"tests/mock_data/mock_{model}.json") as f:
-#             return json.load(f)
-
-#     hotels = open_mock_json("hotels")
-#     rooms = open_mock_json("rooms")
-#     users = open_mock_json("users")
-#     bookings = open_mock_json("bookings")
-
-#     for booking in bookings:
-#         booking["date_from"] = datetime.strptime(
-#             booking["date_from"],
-#             "%Y-%m-%d",
-#         )
-#         booking["date_to"] = datetime.strptime(
-#             booking["date_to"],
-#             "%Y-%m-%d",
-#         )
-
-#     async with async_session_maker() as session:
-#         add_hotels = insert(Hotels).values(hotels)
-#         add_rooms = insert(Rooms).values(rooms)
-#         add_users = insert(Users).values(users)
-#         add_bookings = insert(Bookings).values(bookings)
-
-#         for stmt in (add_hotels, add_rooms, add_users, add_bookings):
-#             await session.execute(stmt)
-#             await session.commit()
+from app.database import Base, async_session_maker, engine
+from app.hotels.models import Hotels  # noqa: F401
+from app.hotels.rooms.models import Rooms  # noqa: F401
+from app.main import app as fastapi_app
 
 
 @pytest.fixture(autouse=True, scope="session")
 async def prepare_database():
     assert settings.MODE == "TEST"
     async with engine.begin() as conn:
-        # await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
-        with open("data/initial.sql") as f:
-            query = text(f.read())
+        def read_sql_file(file_name: str):
+            with open(f"tests/mock_data/{file_name}.sql") as f:
+                return f.read()
+
+        sql_files = ("hotels_mock", "users_mock", "rooms_mock", "hotels_users_favorite")
+
+        for file in sql_files:
+            query = text(read_sql_file(file))
             await conn.execute(query)
 
 
