@@ -7,7 +7,8 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - web:/code
+      - .:/code
+      - /code/.venv
     depends_on:
       - db
       - redis
@@ -53,5 +54,4 @@ services:
   
 volumes:
   database:
-  web:
   cache:  
