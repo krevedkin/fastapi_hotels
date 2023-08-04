@@ -51,7 +51,7 @@ async def get_access_token(
 
 @router.get("/me")
 async def get_me(user: Annotated[User, Depends(get_current_user)]) -> User:
-    return user
+    return User(id=user.id, email=user.email)
 
 
 @router.post("/refresh", response_model=AccessToken)
