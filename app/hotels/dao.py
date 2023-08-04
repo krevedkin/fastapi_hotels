@@ -36,13 +36,13 @@ class HotelsDAO(BaseDAO):
     @classmethod
     async def get_hotels(
         cls,
-        city: str | None,
-        stars: int | None,
-        min_price: int | None,
-        max_price: int | None,
-        favorites_only: bool | None,
-        date_from: date | None,
-        date_to: date | None,
+        city: str | None = None,
+        stars: int | None = None,
+        min_price: int | None = None,
+        max_price: int | None = None,
+        favorites_only: bool | None = None,
+        date_from: date | None = None,
+        date_to: date | None = None,
     ):
         """Запрос на получения отелей с фильтрацией
         В зависимости от переданных параметров возвращает список отелей,
@@ -89,11 +89,11 @@ class HotelsDAO(BaseDAO):
         async with async_session_maker() as session:
             filters = []
             if city:
-                filters.append(Hotels.city == city)
-            if stars:
+                filters.append(func.lower(Hotels.city) == city.lower())
+            if stars and stars in range(1, 6):
                 filters.append(Hotels.stars == stars)
-            filters.append(and_(Rooms.price.between(min_price, max_price)))
-
+            if min_price and max_price:
+                filters.append(and_(Rooms.price.between(min_price, max_price)))
             if favorites_only:
                 filters.append(
                     HotelsUsers.id.isnot(None) if True else HotelsUsers.id.is_(None)
