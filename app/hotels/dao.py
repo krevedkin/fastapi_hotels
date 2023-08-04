@@ -90,11 +90,11 @@ class HotelsDAO(BaseDAO):
         async with async_session_maker() as session:
             filters = []
             if city:
-                filters.append(Hotels.city == city)
-            if stars:
+                filters.append(func.lower(Hotels.city) == city.lower())
+            if stars and stars in range(1, 6):
                 filters.append(Hotels.stars == stars)
-            filters.append(and_(Rooms.price.between(min_price, max_price)))
-
+            if min_price and max_price:
+                filters.append(and_(Rooms.price.between(min_price, max_price)))
             if favorites_only:
                 filters.append(
                     HotelsUsers.id.isnot(None) if True else HotelsUsers.id.is_(None),

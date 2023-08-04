@@ -4,7 +4,6 @@ ARG CONTEXT=dev
 
 RUN echo "CONTEXT=$CONTEXT"
 
-RUN mkdir /code
 WORKDIR /code
 
 RUN pip install poetry 
