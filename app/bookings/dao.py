@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import and_, delete, func, select
+from sqlalchemy import and_, delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bookings.models import Bookings
@@ -54,50 +54,96 @@ class BookingDAO(BaseDAO):
         second_name: str | None,
         phone: str | None,
     ):
+        """
+        Метод для добавления нового бронирования.
+        Если на выбранный период дат нет свободных номеров бронирование
+        не будет осуществлено.
+
+        Args:
+            date_from (date): Дата въезда
+            date_to (date): Дата выезда
+            room_id (int): Индентификатор комнаты
+            user_id (int): Индентификатор пользователя
+            email (str): Email пользователя
+            first_name (str | None): Имя пользователя
+            second_name (str | None): Фамилия пользователя
+            phone (str | None): Телефон пользователя
+
+        Returns:
+            Booking - Объект бронирования в случае успешного бронирования
+            None - В случае если все комнаты заняты и бронирование не удалось
+
+        Для наглядности пример SQL запроса
+                WITH booked_rooms AS (
+            SELECT bookings.id AS id,
+                bookings.room_id AS room_id,
+                bookings.user_id AS user_id,
+                bookings.date_from AS date_from,
+                bookings.date_to AS date_to,
+                bookings.price AS price,
+                bookings.total_cost AS total_cost,
+                bookings.total_days AS total_days,
+                bookings.first_name AS first_name,
+                bookings.second_name AS second_name,
+                bookings.phone AS phone,
+                bookings.email AS email
+            FROM bookings
+            WHERE bookings.room_id = :room_id_1
+                AND (
+                    bookings.date_from >= :date_from_1
+                    AND bookings.date_from <= :date_from_2
+                    OR bookings.date_from <= :date_from_3
+                    AND bookings.date_to > :date_to_1
+                )
+        )
+        SELECT rooms.quantity - count(booked_rooms.room_id) AS rooms_left,
+            rooms.price
+        FROM rooms
+            LEFT OUTER JOIN booked_rooms ON booked_rooms.room_id = rooms.id
+        WHERE rooms.id = :id_1
+        GROUP BY rooms.quantity,
+            rooms.price
+
+
+        """
         async with async_session_maker() as session:
-            bookings_query = (
+            booked_rooms = (
+                select(Bookings)
+                .where(
+                    and_(
+                        Bookings.room_id == room_id,
+                        or_(
+                            and_(
+                                Bookings.date_from >= date_from,
+                                Bookings.date_from <= date_to,
+                            ),
+                            and_(
+                                Bookings.date_from <= date_from,
+                                Bookings.date_to > date_from,
+                            ),
+                        ),
+                    )
+                )
+                .cte("booked_rooms")
+            )
+
+            get_rooms_left = (
                 select(
-                    (Rooms.quantity - func.count(Bookings.id)).label(
-                        "free_rooms_count"
+                    (Rooms.quantity - func.count(booked_rooms.c.room_id)).label(
+                        "rooms_left"
                     ),
                     Rooms.price,
                 )
-                .select_from(Bookings)
-                .outerjoin(Rooms)
-                .where(
-                    and_(
-                        Bookings.date_from.between(date_from, date_to),
-                        Bookings.room_id == room_id,
-                    )
-                )
+                .select_from(Rooms)
+                .join(booked_rooms, booked_rooms.c.room_id == Rooms.id, isouter=True)
+                .where(Rooms.id == room_id)
                 .group_by(Rooms.quantity, Rooms.price)
             )
 
-            result = await session.execute(bookings_query)
-            result = result.mappings().one_or_none()
+            rooms_left = await session.execute(get_rooms_left)
+            rooms_left, room_price = rooms_left.mappings().one().values()
 
-            if result:
-                free_rooms_count, room_price = result.values()
-                if free_rooms_count and free_rooms_count > 0:
-                    booking = Bookings(
-                        room_id=room_id,
-                        user_id=user_id,
-                        date_from=date_from,
-                        date_to=date_to,
-                        price=room_price,
-                        email=email,
-                        first_name=first_name,
-                        second_name=second_name,
-                        phone=phone,
-                    )
-                    session.add(booking)
-                    await session.flush()
-                    await session.commit()
-                    return booking
-            else:
-                query = select(Rooms.price).where(Rooms.id == room_id)
-                result = await session.execute(query)
-                room_price = result.scalar()
+            if rooms_left > 0:
                 booking = Bookings(
                     room_id=room_id,
                     user_id=user_id,
