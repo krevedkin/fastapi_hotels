@@ -13,7 +13,7 @@ class BookingAddSchema(BaseModel):
     phone: int
 
     @validator("date_to")
-    def name_must_contain_space(cls, date_to, values):
+    def date_from_must_be_less_than_date_to(cls, date_to, values):
         date_from = values.get("date_from")
         if date_from and date_from >= date_to:
             raise ValueError("date_to не может быть меньше или равен date_from")
