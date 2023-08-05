@@ -105,7 +105,7 @@ async def delete_favorite_hotel(
 async def get_hotel(id: int, user: Annotated[User, Depends(get_current_user)]):
     hotels = await HotelsDAO().get_hotel_with_rooms(hotel_id=id)
     if not hotels:
-        return "No hotels"
+        raise RecordDoesNotExists
     return hotels
 
 
@@ -124,6 +124,7 @@ async def get_hotels(
         raise HTTPException(
             status_code=400, detail="max_price cannot be less than min_price"
         )
+
     return await HotelsDAO().get_hotels(
         user_id=user.id,
         city=city,

@@ -137,7 +137,7 @@ class HotelsDAO(BaseDAO):
 
             query = (
                 select(
-                    Hotels.id.distinct(),
+                    func.distinct(Hotels.id).label("id"),
                     Hotels.name,
                     Hotels.description,
                     Hotels.stars,
