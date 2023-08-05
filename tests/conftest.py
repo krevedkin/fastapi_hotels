@@ -25,7 +25,13 @@ async def prepare_database():
             with open(f"tests/mock_data/{file_name}.sql") as f:
                 return f.read()
 
-        sql_files = ("hotels_mock", "users_mock", "rooms_mock", "hotels_users_favorite")
+        sql_files = (
+            "hotels_mock",
+            "users_mock",
+            "rooms_mock",
+            "hotels_users_favorite",
+            "bookings_mock",
+        )
 
         for file in sql_files:
             query = text(read_sql_file(file))
