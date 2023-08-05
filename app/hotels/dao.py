@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import and_, case, delete, func, insert, select
+from sqlalchemy import and_, case, delete, func, insert, select, or_
 from sqlalchemy.exc import IntegrityError
 
 from app.bookings.models import Bookings
@@ -55,7 +55,7 @@ class HotelsDAO(BaseDAO):
         для наглядности полный SQL запрос со всеми фильтрами выглядит так:
 
         SELECT hotels.id,
-            hotels.name,
+            DISTINCT(hotels.name),
             hotels.description,
             hotels.stars,
             hotels.city,
@@ -78,9 +78,15 @@ class HotelsDAO(BaseDAO):
                     LEFT OUTER JOIN rooms ON rooms.id =
                                         bookings.room_id
                     JOIN hotels ON hotels.id = rooms.hotel_id
-                WHERE bookings.date_from BETWEEN :date_from_1
-                                            AND :date_from_2
-            )
+                 WHERE (
+                        bookings.date_from >= :date_from
+                        AND bookings.date_from <= :date_to
+                                )
+                        OR (
+                            bookings.date_from <= :date_from
+                            AND bookings.date_to >= :date_from
+                                )
+                        )
         GROUP BY hotels.id, hotels_users_favorite.id
 
         Returns:
@@ -106,7 +112,18 @@ class HotelsDAO(BaseDAO):
                     select(func.count(Bookings.id))
                     .outerjoin(Rooms)
                     .join(Hotels)
-                    .where(Bookings.date_from.between(date_from, date_to))
+                    .where(
+                        or_(
+                            and_(
+                                Bookings.date_from >= date_from,
+                                Bookings.date_from <= date_to,
+                            ),
+                            and_(
+                                Bookings.date_from <= date_from,
+                                Bookings.date_to >= date_from,
+                            ),
+                        )
+                    )
                 )
                 filters.append(and_(Hotels.rooms_quantity > bookings_query))
 
@@ -120,7 +137,7 @@ class HotelsDAO(BaseDAO):
 
             query = (
                 select(
-                    Hotels.id,
+                    Hotels.id.distinct(),
                     Hotels.name,
                     Hotels.description,
                     Hotels.stars,

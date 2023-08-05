@@ -123,4 +123,13 @@ VALUES (
         '["Горные лыжи", "Сауна", "WiFi"]',
         20,
         'http://localhost:8000/static/images/rooms/10.webp'
+    ),
+    (
+        12,
+        'Тестовая комната 10',
+        'Тестовое описание 10',
+        3000,
+        '["Горные лыжи", "Сауна", "WiFi"]',
+        5,
+        'http://localhost:8000/static/images/rooms/10.webp'
     );
