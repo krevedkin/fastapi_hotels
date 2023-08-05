@@ -37,13 +37,13 @@ class HotelsDAO(BaseDAO):
     async def get_hotels(
         cls,
         user_id: int,
-        city: str | None,
-        stars: int | None,
-        min_price: int | None,
-        max_price: int | None,
-        favorites_only: bool | None,
-        date_from: date | None,
-        date_to: date | None,
+        city: str | None = None,
+        stars: int | None = None,
+        min_price: int | None = None,
+        max_price: int | None = None,
+        favorites_only: bool | None = None,
+        date_from: date | None = None,
+        date_to: date | None = None,
     ):
         """Запрос на получения отелей с фильтрацией
         В зависимости от переданных параметров возвращает список отелей,
