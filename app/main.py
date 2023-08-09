@@ -12,12 +12,14 @@ from redis import asyncio as aioredis
 from app.auth.router import router as auth_router
 from app.bookings.router import router as bookings_router
 from app.hotels.rooms.router import router as hotels_router
+from app.images.router import router as images_router
 
 app = FastAPI()
 
 app.include_router(auth_router)
 app.include_router(bookings_router)
 app.include_router(hotels_router)
+app.include_router(images_router)
 
 origins = [
     "http://localhost:3000",
