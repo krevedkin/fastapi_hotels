@@ -45,6 +45,9 @@ services:
       args:
         CONTEXT: "test"
     container_name: test_hotels_celery
+    volumes:
+      - .:/code
+      - /code/.venv
     command: ["/code/docker/celery.sh", "celery"]
     depends_on:
       - test_redis
@@ -52,3 +55,16 @@ services:
       - .test.env
 
 
+  test_flower:
+    build: 
+      context: .
+      args:
+        CONTEXT: "test"
+    container_name: test_hotels_flower
+    command: ["/code/docker/celery.sh", "flower"]
+    env_file:
+      - .test.env
+    depends_on:
+      - test_redis
+    ports:
+      - 5556:5555
