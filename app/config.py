@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXP_DAYS: int = 14
     ACCESS_TOKEN_EXP_MINS: int = 10
 
+    TELEGRAM_TOKEN: str
+
     @property
     def DATABASE_URL(self):
         return PostgresDsn.build(

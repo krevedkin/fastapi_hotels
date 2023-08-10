@@ -18,7 +18,7 @@ services:
       - test_db
       - test_redis
     command: "/code/docker/app.sh"
-
+    tty: true
   
   test_db:
     image: postgres:15
@@ -31,6 +31,7 @@ services:
       - 5430:5432
     tmpfs:
       - /var/lib/postgresql/data
+    tty: true
     
 
   test_redis:
@@ -53,6 +54,7 @@ services:
       - test_redis
     env_file:
       - .test.env
+    tty: true
 
 
   test_flower:
@@ -68,3 +70,4 @@ services:
       - test_redis
     ports:
       - 5556:5555
+    tty: true

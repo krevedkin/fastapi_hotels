@@ -9,11 +9,12 @@ from fastapi_cache.backends.redis import RedisBackend
 from loguru import logger
 from redis import asyncio as aioredis
 
+from app.admin.setup_admin import setup_admin
 from app.auth.router import router as auth_router
 from app.bookings.router import router as bookings_router
 from app.hotels.rooms.router import router as hotels_router
 from app.images.router import router as images_router
-from app.admin.setup_admin import setup_admin
+from app.middleware import handle_exceptions
 
 app = FastAPI()
 
@@ -48,6 +49,8 @@ async def startup():
 
 
 setup_admin(app)
+
+app.middleware("exceptions_handler")(handle_exceptions)
 
 if __name__ == "__main__":
     logger.info(f"App running in mode: {os.environ.get('MODE')}")
