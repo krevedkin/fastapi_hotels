@@ -13,6 +13,7 @@ from app.auth.router import router as auth_router
 from app.bookings.router import router as bookings_router
 from app.hotels.rooms.router import router as hotels_router
 from app.images.router import router as images_router
+from app.admin.setup_admin import setup_admin
 
 app = FastAPI()
 
@@ -20,6 +21,7 @@ app.include_router(auth_router)
 app.include_router(bookings_router)
 app.include_router(hotels_router)
 app.include_router(images_router)
+
 
 origins = [
     "http://localhost:3000",
@@ -44,6 +46,8 @@ async def startup():
     )
     FastAPICache.init(RedisBackend(redis), prefix="cache")
 
+
+setup_admin(app)
 
 if __name__ == "__main__":
     logger.info(f"App running in mode: {os.environ.get('MODE')}")
