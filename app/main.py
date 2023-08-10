@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from loguru import logger
+from prometheus_fastapi_instrumentator import Instrumentator
 from redis import asyncio as aioredis
 
 from app.admin.setup_admin import setup_admin
@@ -51,6 +52,11 @@ async def startup():
 setup_admin(app)
 
 app.middleware("exceptions_handler")(handle_exceptions)
+
+instrumentator = Instrumentator(
+    should_group_status_codes=False, excluded_handlers=[".*admin.*", "/metrics"]
+)
+instrumentator.instrument(app).expose(app)
 
 if __name__ == "__main__":
     logger.info(f"App running in mode: {os.environ.get('MODE')}")
