@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request, Response, status
@@ -15,11 +15,10 @@ from app.auth.exceptions import (
     RefreshTokenExpriredException,
     UserNotFoundHTTPException,
 )
-from app.auth.schemas import AccessToken, User, UserRegister
 from app.auth.models import Users
+from app.auth.schemas import AccessToken, User, UserRegister
 from app.auth.utils import authenticate_user, register_user, set_tokens
 from app.config import settings
-
 
 router = APIRouter(prefix="/auth", tags=["Аутентификация"])
 
