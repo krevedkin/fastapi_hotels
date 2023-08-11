@@ -50,6 +50,7 @@ http://localhost:3001/
 Порты можно для подключения на хост-машине можно изменить в **docker-compose.yml**
 
 ## Настройка дашборда Grafana
+<img width="1920" alt="dashboard-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/591d3006-d2a8-4116-a046-df1d68c98060">
 
 тут картинка мониторинга
 
