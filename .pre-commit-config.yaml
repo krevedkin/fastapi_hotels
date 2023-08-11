@@ -21,3 +21,4 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
+        entry: bash -c 'isort --profile black app'
