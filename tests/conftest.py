@@ -1,9 +1,8 @@
 import asyncio
-from datetime import datetime
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import insert, text
+from sqlalchemy import text
 
 from app.auth.models import Users  # noqa: F401
 from app.bookings.models import Bookings  # noqa: F401

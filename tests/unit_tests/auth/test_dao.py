@@ -1,9 +1,11 @@
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
+
 import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.auth.dao import UsersDAO, RefreshSessionsDAO
+
+from app.auth.dao import RefreshSessionsDAO, UsersDAO
 from app.auth.models import RefreshSessions, Users
 
 
