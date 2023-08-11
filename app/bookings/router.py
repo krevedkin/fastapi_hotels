@@ -5,10 +5,11 @@ from fastapi import APIRouter, Depends, status
 from app.auth.dependencies import get_current_user
 from app.auth.schemas import User
 from app.bookings.dao import BookingDAO
-from app.bookings.exceptions import (BookingNotExistsHTTPException,
-                                     NoFreeRoomsLeftHTTPException)
-from app.bookings.schemas import (BookingAddSchema, BookingDeleteSchema,
-                                  BookingSchema)
+from app.bookings.exceptions import (
+    BookingNotExistsHTTPException,
+    NoFreeRoomsLeftHTTPException,
+)
+from app.bookings.schemas import BookingAddSchema, BookingDeleteSchema, BookingSchema
 
 router = APIRouter(prefix="/bookings", tags=["Бронирования"])
 

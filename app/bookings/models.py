@@ -27,7 +27,6 @@ class Bookings(Base):
 
     room = relationship("Rooms", back_populates="booked_room")
     user = relationship("Users", back_populates="user_booking")
-    
 
     def __str__(self) -> str:
         return f"Bookings {self.date_from} - {self.date_to}"

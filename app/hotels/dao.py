@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import and_, case, delete, func, insert, select, or_
+from sqlalchemy import and_, case, delete, func, insert, or_, select
 from sqlalchemy.exc import IntegrityError
 
 from app.bookings.models import Bookings
