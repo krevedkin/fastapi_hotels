@@ -21,6 +21,20 @@
 ## Скриншоты приложения
 Так как сейчас довольно трудно найти полностью бесплатный хостинг для разворачивания докер контейнеров я не деплоил приложение. Поэтому для демонстрации прилагаю скриншоты
 
+1. Документация API
+<img width="768" alt="swagger-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/d1f96497-a8f4-422c-9fae-59bbd1d15ead">
+
+2. Интерфейс панели администратора
+<img width="1022" alt="admin-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/519eff34-884d-486a-8a18-342a54a42a21">
+
+3. Интерфейс Flower для отслеживания состояния Celery задач
+<img width="1919" alt="flower-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/e7c912ab-4800-4415-9e4c-bd00f940a524">
+
+4. Dashboard Grafana для мониторинга состояния приложения
+<img width="1920" alt="dashboard-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/c91be75b-4a02-445b-8c0e-500608cf154f">
+
+5. Пример главной страницы frontend приложения, больше скриншотов тут
+<img width="1917" alt="forntend-example-home" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/ebc1bdab-472a-4a35-9003-2c2c773713c9">
 
 ## Установка
 Для установки потребуется **poetry** а также **Docker** и **docker-compose**.
@@ -54,8 +68,6 @@ http://localhost:3001/
 
 ## Настройка дашборда Grafana
 <img width="1920" alt="dashboard-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/591d3006-d2a8-4116-a046-df1d68c98060">
-
-тут картинка мониторинга
 
 Для отображения дэшборда в корне проекта подготовлен файл **grafana-dashboard.json**
 
@@ -215,3 +227,6 @@ docker compose -f docker-compose.test.yaml exec test_web test_web pytest
 Для этого необходимо получить токен для бота у BotFater в telegram, после чего сохранить токен в .env файл, а также указать chat_id администратора которому должны приходить уведомления в модуле **middleware.py**
 
 Пример вывода сообщений от бота:
+<img width="762" alt="telegram-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/1d2e92bc-a8ab-4031-8016-454c735eca2a">
+
+
