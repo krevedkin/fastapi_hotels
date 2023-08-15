@@ -17,7 +17,11 @@ from app.hotels.rooms.router import router as hotels_router
 from app.images.router import router as images_router
 from app.middleware import handle_exceptions
 
-app = FastAPI()
+app = FastAPI(
+    title="Полуостровок API",
+    description="Сервис для бронирования номеров в отелях",
+    version="1.0.0"
+)
 
 app.include_router(auth_router)
 app.include_router(bookings_router)
