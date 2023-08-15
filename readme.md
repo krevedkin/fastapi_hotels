@@ -22,7 +22,7 @@
 Так как сейчас довольно трудно найти полностью бесплатный хостинг для разворачивания докер контейнеров я не деплоил приложение. Поэтому для демонстрации прилагаю скриншоты
 
 1. Документация API
-<img width="768" alt="swagger-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/d1f96497-a8f4-422c-9fae-59bbd1d15ead">
+<img width="1920" alt="swagger-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/d1f96497-a8f4-422c-9fae-59bbd1d15ead">
 
 2. Интерфейс панели администратора
 <img width="1022" alt="admin-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/519eff34-884d-486a-8a18-342a54a42a21">
