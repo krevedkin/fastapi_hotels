@@ -27,7 +27,7 @@ async def get_locations(
 @router.post(
     "/favorite",
     status_code=status.HTTP_201_CREATED,
-    summary="Добавить избранный отель пользователя",
+    summary="Add hotel to user favorite",
     responses={
         201: {"description": "Запись добавлена"},
         409: {
@@ -70,7 +70,7 @@ async def add_favorite_hotel(
 @router.delete(
     "/favorite",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Удалить избранный отель пользователя",
+    summary="Delete hotel from user favorite",
     responses={
         204: {"description": "Запись удалена"},
         404: {"description": "В таблице нет записи с такими hotel_id и user_id"},
