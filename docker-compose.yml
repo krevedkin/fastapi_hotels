@@ -13,6 +13,7 @@ services:
       - db
       - redis
     command: "/code/docker/app.sh"
+    tty: true
   
   db:
     image: postgres:15
@@ -37,10 +38,14 @@ services:
       context: .
     container_name: hotels_celery
     command: ["/code/docker/celery.sh", "celery"]
+    volumes:
+      - .:/code
+      - /code/.venv
     depends_on:
       - redis
     env_file:
       - .dev.env
+    tty: true
 
   flower:
     build: 

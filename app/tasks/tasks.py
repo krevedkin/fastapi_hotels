@@ -10,7 +10,7 @@ def process_image(folder: str, file_path: str):
     file_name = f"{count_files_in_folder(folder_path) + 1}.webp"
     img = Image.open(file_path)
     img = img.convert("RGB")
-    img.thumbnail((600, 500))
+    img.resize((1280, 720))
     img.save(f"{folder_path}{file_name}", "webp")
     remove_file_from_disk(file_path)
     return file_name
