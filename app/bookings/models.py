@@ -1,7 +1,7 @@
 from datetime import date
 
-from sqlalchemy.orm import mapped_column, Mapped
-from sqlalchemy import String, JSON, Integer, ForeignKey, Date, Computed
+from sqlalchemy import Computed, Date, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
@@ -24,3 +24,9 @@ class Bookings(Base):
     second_name: Mapped[str] = mapped_column(String, nullable=True)
     phone: Mapped[int] = mapped_column(String(11), nullable=True)
     email: Mapped[str] = mapped_column(String, nullable=False)
+
+    room = relationship("Rooms", back_populates="booked_room")
+    user = relationship("Users", back_populates="user_booking")
+
+    def __str__(self) -> str:
+        return f"Bookings {self.date_from} - {self.date_to}"

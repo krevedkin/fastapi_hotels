@@ -1,0 +1,83 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/code
+      - /code/.venv
+    depends_on:
+      - db
+      - redis
+    command: "/code/docker/app.sh"
+    tty: true
+  
+  db:
+    image: postgres:15
+    container_name: hotels_db
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - .dev.env
+    ports:
+      - 5431:5432
+    volumes:
+      - database:/var/lib/postgresql/data 
+
+  redis:
+    image: redis:7
+    container_name: hotels_redis
+    volumes:
+      - cache:/data
+
+  celery:
+    build: 
+      context: .
+    container_name: hotels_celery
+    command: ["/code/docker/celery.sh", "celery"]
+    volumes:
+      - .:/code
+      - /code/.venv
+    depends_on:
+      - redis
+    env_file:
+      - .dev.env
+    tty: true
+
+  flower:
+    build: 
+      context: .
+    container_name: hotels_flower
+    command: ["/code/docker/celery.sh", "flower"]
+    depends_on:
+      - celery
+    ports:
+      - 5555:5555
+
+  prometheus:
+      image: prom/prometheus:v2.43.0
+      container_name: prometheus
+      volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+        - prometheusdata:/prometheus
+      restart: unless-stopped
+      ports:
+        - 9090:9090
+
+  grafana:
+    image: grafana/grafana:9.4.7
+    container_name: grafana
+    volumes:
+      - grafanadata:/var/lib/grafana
+    restart: unless-stopped
+    ports:
+      - 3001:3000
+
+volumes:
+  database:
+  cache:  
+  grafanadata:
+  prometheusdata:

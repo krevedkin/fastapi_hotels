@@ -1,5 +1,7 @@
 from typing import Literal
-from pydantic import BaseSettings, PostgresDsn
+
+from loguru import logger
+from pydantic import BaseSettings, PostgresDsn, RedisDsn
 
 
 class Settings(BaseSettings):
@@ -11,11 +13,16 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
 
+    REDIS_HOST: str
+    REDIS_PORT: str
+
     SECRET_KEY: str
     ALGORITHM: str
     REFRESH_TOKEN_COOKIE_NAME: str = "hotels-app-refresh"
     REFRESH_TOKEN_EXP_DAYS: int = 14
     ACCESS_TOKEN_EXP_MINS: int = 10
+
+    TELEGRAM_TOKEN: str
 
     @property
     def DATABASE_URL(self):
@@ -28,20 +35,15 @@ class Settings(BaseSettings):
             path=f"/{self.DB_NAME}",
         )
 
+    @property
+    def REDIS_URL(self):
+        return RedisDsn.build(
+            scheme="redis", host=self.REDIS_HOST, port=self.REDIS_PORT
+        )
+
     class Config:
         env_file = ".dev.env"
 
 
-# def get_settings() -> Settings:
-#     mode = os.environ.get("HOTELS_APP_MODE")
-#     # if mode == "DEV":
-#     #     return Settings(_env_file=".env")
-#     if mode == "TEST":
-#         return Settings(_env_file=".env-test")
-#     # return Settings(_env_file=".env-test")
-
-#     raise FileNotFoundError("Не найден файл .env с настройками приложения")
-
-
-settings = Settings()
-print(settings.MODE)
+settings = Settings()  # type: ignore
+logger.info(f"App running in {settings.MODE} mode")

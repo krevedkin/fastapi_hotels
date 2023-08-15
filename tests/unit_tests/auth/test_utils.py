@@ -1,4 +1,7 @@
 import pytest
+
+from app.auth.models import Users
+from app.auth.schemas import RefreshToken
 from app.auth.utils import (
     authenticate_user,
     create_access_token,
@@ -7,8 +10,6 @@ from app.auth.utils import (
     get_user,
     verify_password,
 )
-from app.auth.models import Users
-from app.auth.schemas import RefreshToken
 
 
 @pytest.mark.parametrize(

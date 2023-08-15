@@ -1,27 +1,20 @@
 from datetime import date
-
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.params import Query
 
-from app.hotels.schemas import HotelDetailSchema, HotelFavoriteSchema, HotelSchema
+from app.auth.dependencies import get_current_user
+from app.auth.schemas import User
 from app.hotels.dao import HotelsDAO
 from app.hotels.exceptions import (
     FavoriteHotelAlreadyExistsDBexception,
     FavoriteHotelAlreadyExistsHTTPException,
     RecordDoesNotExists,
 )
-from app.auth.dependencies import get_current_user
-from app.auth.schemas import User
+from app.hotels.schemas import HotelDetailSchema, HotelFavoriteSchema, HotelSchema
 
 router = APIRouter(prefix="/hotels", tags=["Отели и комнаты"])
-
-
-@router.get("/test")
-async def test_endpoint():
-    # quey = await HotelsDAO()._build_query("2020-05-10", "2020-05-15")
-    return await HotelsDAO().test_request()
 
 
 @router.get("/cities")
@@ -34,7 +27,7 @@ async def get_locations(
 @router.post(
     "/favorite",
     status_code=status.HTTP_201_CREATED,
-    summary="Добавить избранный отель пользователя",
+    summary="Add hotel to user favorite",
     responses={
         201: {"description": "Запись добавлена"},
         409: {
@@ -77,7 +70,7 @@ async def add_favorite_hotel(
 @router.delete(
     "/favorite",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Удалить избранный отель пользователя",
+    summary="Delete hotel from user favorite",
     responses={
         204: {"description": "Запись удалена"},
         404: {"description": "В таблице нет записи с такими hotel_id и user_id"},
@@ -112,12 +105,13 @@ async def delete_favorite_hotel(
 async def get_hotel(id: int, user: Annotated[User, Depends(get_current_user)]):
     hotels = await HotelsDAO().get_hotel_with_rooms(hotel_id=id)
     if not hotels:
-        return "No hotels"
+        raise RecordDoesNotExists
     return hotels
 
 
 @router.get("/", response_model=list[HotelSchema])
 async def get_hotels(
+    user: Annotated[User, Depends(get_current_user)],
     date_from: date | None = None,
     date_to: date | None = None,
     city: str | None = None,
@@ -130,7 +124,9 @@ async def get_hotels(
         raise HTTPException(
             status_code=400, detail="max_price cannot be less than min_price"
         )
+
     return await HotelsDAO().get_hotels(
+        user_id=user.id,
         city=city,
         stars=stars,
         min_price=min_price,

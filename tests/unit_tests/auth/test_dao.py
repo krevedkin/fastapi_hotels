@@ -1,9 +1,11 @@
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
+
 import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.auth.dao import UsersDAO, RefreshSessionsDAO
+
+from app.auth.dao import RefreshSessionsDAO, UsersDAO
 from app.auth.models import RefreshSessions, Users
 
 
@@ -43,5 +45,5 @@ async def test_add_refresh_token(session: AsyncSession):
     assert result.expire == expire
 
     refresh_session = await RefreshSessionsDAO().get_refresh_session(token)
-
+    assert refresh_session is not None
     assert refresh_session.refresh_token == result.refresh_token

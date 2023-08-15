@@ -1,112 +1,18 @@
 from datetime import date
-from typing import Any
-from sqlalchemy import case, insert, select, func, or_, and_, delete
-from sqlalchemy.ext.asyncio import AsyncSession
+
+from sqlalchemy import and_, case, delete, func, insert, or_, select
 from sqlalchemy.exc import IntegrityError
 
-from app.dao.base import BaseDAO
-from app.hotels.models import Hotels, HotelsUsers
-from app.database import async_session_maker
 from app.bookings.models import Bookings
-from app.hotels.rooms.models import Rooms
+from app.dao.base import BaseDAO
+from app.database import async_session_maker
 from app.hotels.exceptions import FavoriteHotelAlreadyExistsDBexception
+from app.hotels.models import Hotels, HotelsUsers
+from app.hotels.rooms.models import Rooms
 
 
 class HotelsDAO(BaseDAO):
     model = Hotels
-
-    # @classmethod
-    # async def get_hotels_by_location(cls, location: str, date_from, date_to):
-    #     async with async_session_maker() as session:
-    #         session: AsyncSession
-    #         booked_rooms_count = (
-    #             select(func.count().label("booked_rooms_count"))
-    #             .select_from(Bookings)
-    #             .where(
-    #                 or_(
-    #                     and_(
-    #                         Bookings.date_from >= date_from,
-    #                         Bookings.date_from <= date_to,
-    #                     ),
-    #                     and_(
-    #                         Bookings.date_from <= date_from,
-    #                         Bookings.date_from > date_to,
-    #                     ),
-    #                 )
-    #             )
-    #         ).as_scalar()
-
-    #         query = (
-    #             select(
-    #                 Hotels.id,
-    #                 Hotels.name,
-    #                 Hotels.location,
-    #                 Hotels.rooms_quantity,
-    #                 Hotels.services,
-    #                 Hotels.image_url,
-    #                 (Hotels.rooms_quantity - func.count(Bookings.room_id)).label(
-    #                     "rooms_left"
-    #                 ),
-    #             )
-    #             .join(Rooms, Hotels.id == Rooms.hotel_id)
-    #             .join(Bookings, Rooms.id == Bookings.room_id, isouter=True)
-    #             .where(
-    #                 and_(
-    #                     Hotels.location.ilike(f"%{location}%"),
-    #                     # type: ignore
-    #                     Hotels.rooms_quantity > booked_rooms_count,
-    #                 )
-    #             )
-    #             .group_by(
-    #                 Hotels.id,
-    #                 Hotels.name,
-    #                 Hotels.location,
-    #                 Hotels.rooms_quantity,
-    #                 Hotels.image_url,
-    #             )
-    #             .having(Hotels.rooms_quantity - func.count(Bookings.room_id) > 0)
-    #         )
-
-    #     result = await session.execute(query)
-    #     return result.mappings().all()
-
-    # @classmethod
-    # async def get_hotels(cls):
-    #     async with async_session_maker() as session:
-    #         query = select(
-    #             Hotels.id,
-    #             Hotels.name,
-    #             Hotels.location,
-    #             Hotels.image_url,
-    #             Hotels.stars,
-    #             Hotels.description,
-    #         )
-    #         result = await session.execute(query)
-    #         return result.mappings().all()
-
-    @classmethod
-    async def _build_query(cls, date_from, date_to):
-        async with async_session_maker() as session:
-            booked_rooms_count = (
-                select(func.count().label("booked_rooms_count"))
-                .select_from(Bookings)
-                .where(
-                    or_(
-                        and_(
-                            Bookings.date_from >= date_from,
-                            Bookings.date_from <= date_to,
-                        ),
-                        and_(
-                            Bookings.date_from <= date_from,
-                            Bookings.date_from > date_to,
-                        ),
-                    )
-                )
-            )
-            # r = await session.execute(booked_rooms_count)
-            # print(r.mappings().all())
-            print(booked_rooms_count)
-            # return booked_rooms_count
 
     @classmethod
     async def get_hotel_with_rooms(cls, hotel_id: int):
@@ -130,13 +36,14 @@ class HotelsDAO(BaseDAO):
     @classmethod
     async def get_hotels(
         cls,
-        city: str | None,
-        stars: int | None,
-        min_price: int | None,
-        max_price: int | None,
-        favorites_only: bool | None,
-        date_from: date | None,
-        date_to: date | None,
+        user_id: int,
+        city: str | None = None,
+        stars: int | None = None,
+        min_price: int | None = None,
+        max_price: int | None = None,
+        favorites_only: bool | None = None,
+        date_from: date | None = None,
+        date_to: date | None = None,
     ):
         """Запрос на получения отелей с фильтрацией
         В зависимости от переданных параметров возвращает список отелей,
@@ -148,7 +55,7 @@ class HotelsDAO(BaseDAO):
         для наглядности полный SQL запрос со всеми фильтрами выглядит так:
 
         SELECT hotels.id,
-            hotels.name,
+            DISTINCT(hotels.name),
             hotels.description,
             hotels.stars,
             hotels.city,
@@ -171,9 +78,15 @@ class HotelsDAO(BaseDAO):
                     LEFT OUTER JOIN rooms ON rooms.id =
                                         bookings.room_id
                     JOIN hotels ON hotels.id = rooms.hotel_id
-                WHERE bookings.date_from BETWEEN :date_from_1
-                                            AND :date_from_2
-            )
+                 WHERE (
+                        bookings.date_from >= :date_from
+                        AND bookings.date_from <= :date_to
+                                )
+                        OR (
+                            bookings.date_from <= :date_from
+                            AND bookings.date_to >= :date_from
+                                )
+                        )
         GROUP BY hotels.id, hotels_users_favorite.id
 
         Returns:
@@ -183,22 +96,34 @@ class HotelsDAO(BaseDAO):
         async with async_session_maker() as session:
             filters = []
             if city:
-                filters.append(Hotels.city == city)
-            if stars:
+                filters.append(func.lower(Hotels.city) == city.lower())
+            if stars and stars in range(1, 6):
                 filters.append(Hotels.stars == stars)
-            filters.append(and_(Rooms.price.between(min_price, max_price)))
-
+            if min_price and max_price:
+                filters.append(and_(Rooms.price.between(min_price, max_price)))
             if favorites_only:
                 filters.append(
-                    HotelsUsers.id.isnot(None) if True else HotelsUsers.id.is_(None)
+                    HotelsUsers.id.isnot(None) if True else HotelsUsers.id.is_(None),
                 )
+                filters.append(HotelsUsers.user_id == user_id)
 
             if date_from and date_to:
                 bookings_query = (
                     select(func.count(Bookings.id))
                     .outerjoin(Rooms)
                     .join(Hotels)
-                    .where(Bookings.date_from.between(date_from, date_to))
+                    .where(
+                        or_(
+                            and_(
+                                Bookings.date_from >= date_from,
+                                Bookings.date_from <= date_to,
+                            ),
+                            and_(
+                                Bookings.date_from <= date_from,
+                                Bookings.date_to >= date_from,
+                            ),
+                        )
+                    )
                 )
                 filters.append(and_(Hotels.rooms_quantity > bookings_query))
 
@@ -212,7 +137,7 @@ class HotelsDAO(BaseDAO):
 
             query = (
                 select(
-                    Hotels.id,
+                    func.distinct(Hotels.id).label("id"),
                     Hotels.name,
                     Hotels.description,
                     Hotels.stars,

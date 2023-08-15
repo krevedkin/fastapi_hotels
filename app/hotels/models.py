@@ -1,13 +1,14 @@
 from typing import Any
-from sqlalchemy.orm import mapped_column, Mapped  # relationship
+
 from sqlalchemy import (
-    UniqueConstraint,
+    JSON,
     CheckConstraint,
     ForeignKey,
-    String,
-    JSON,
     Integer,
+    String,
+    UniqueConstraint,
 )
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
@@ -18,10 +19,16 @@ class HotelsUsers(Base):
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
+    user = relationship("Users", back_populates="user_favorite")
+    hotel = relationship("Hotels", back_populates="user_favorite")
+
     __table_args__ = (
         CheckConstraint(hotel_id >= 1, name="check_min_stars"),
         UniqueConstraint(hotel_id, user_id),
     )
+
+    def __str__(self) -> str:
+        return f"HotelsUsers {self.id}"
 
 
 class Hotels(Base):
@@ -38,11 +45,13 @@ class Hotels(Base):
     city: Mapped[str] = mapped_column(String, nullable=False)
     address: Mapped[str] = mapped_column(String, nullable=False)
 
-    # users = relationship(
-    #     "User", secondary=HotelsUsers.__table__, back_populates="hotels"
-    # )
+    user_favorite = relationship("HotelsUsers", back_populates="hotel")
+    rooms = relationship("Rooms", back_populates="hotel")
 
     __table_args__ = (
         CheckConstraint(stars >= 1, name="check_min_stars"),
         CheckConstraint(stars <= 5, name="check_max_stars"),
     )
+
+    def __str__(self) -> str:
+        return f"Hotel({self.name})"

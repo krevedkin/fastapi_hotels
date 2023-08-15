@@ -159,8 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-# sql files
-*.sql
 
 # Mac OS
 ./DS_Store
@@ -168,3 +166,6 @@ cython_debug/
 
 # VScode
 .vscode/
+
+# Redis
+dump.rdb

@@ -1,4 +1,5 @@
 from fastapi import status
+
 from app.exceptions import BaseHTTPException
 
 
@@ -9,6 +10,10 @@ class BaseAuthException(BaseHTTPException):
 
 class NoRefreshTokenHTTPException(BaseAuthException):
     detail = "refresh token отсутствует"
+
+
+class InvalidRefreshTokenHTTPException(BaseAuthException):
+    detail = "Неверный формат refresh token"
 
 
 class NoRefreshSessionHTTPException(BaseAuthException):
