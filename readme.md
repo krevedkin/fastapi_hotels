@@ -1,7 +1,7 @@
 # FastAPI hotels backend
 ![Static Badge](https://img.shields.io/badge/Coverage-93%25-brightgreen)
 ## О проекте
-Проект представляет собой backend веб-приложения для поиска и бронирования отелей. Целью проекта является разработка fullstack приложения для работы с современными технологиями используемых при разработке веб-приложений. [Ссылка на фронтенд](https://github.com/krevedkin/bookings-front-app)
+Проект представляет собой backend веб-приложения для поиска и бронирования отелей. Целью проекта является разработка fullstack приложения для работы с современными технологиями используемых при разработке веб-приложений. [Ссылка на frontend](https://github.com/krevedkin/bookings-front-app)
 
 ## Features
 
