@@ -22,19 +22,25 @@
 Так как сейчас довольно трудно найти полностью бесплатный хостинг для разворачивания докер контейнеров я не деплоил приложение. Поэтому для демонстрации прилагаю скриншоты
 
 1. Документация API
-<img width="1920" alt="swagger-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/d1f96497-a8f4-422c-9fae-59bbd1d15ead">
+
+<img width="1920" alt="swagger-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/adaba937-86a6-40a3-9b03-f07d80865dfc">
 
 2. Интерфейс панели администратора
-<img width="1022" alt="admin-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/519eff34-884d-486a-8a18-342a54a42a21">
+
+<img width="1022" alt="admin-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/c4e6f94c-50e1-4466-805d-6761d304bf3e">
 
 3. Интерфейс Flower для отслеживания состояния Celery задач
-<img width="1919" alt="flower-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/e7c912ab-4800-4415-9e4c-bd00f940a524">
+
+<img width="1919" alt="flower-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/9af3f9c2-abb7-46cb-9337-6d41e021f4ab">
 
 4. Dashboard Grafana для мониторинга состояния приложения
-<img width="1920" alt="dashboard-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/c91be75b-4a02-445b-8c0e-500608cf154f">
+
+<img width="1920" alt="dashboard-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/bde7a0f0-79ef-4b8e-ac84-cdea906703e4">
+
 
 5. Пример главной страницы frontend приложения, [Больше скриншотов тут](https://github.com/krevedkin/bookings-front-app)
-<img width="1917" alt="forntend-example-home" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/ebc1bdab-472a-4a35-9003-2c2c773713c9">
+
+<img width="1917" alt="forntend-example-home" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/833bcb71-9393-4d4c-a707-289c6ffcfa9f">
 
 ## Установка
 Для установки потребуется **poetry** а также **Docker** и **docker-compose**.
@@ -67,7 +73,7 @@ http://localhost:3001/
 Порты можно для подключения на хост-машине можно изменить в **docker-compose.yml**
 
 ## Настройка дашборда Grafana
-<img width="1920" alt="dashboard-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/591d3006-d2a8-4116-a046-df1d68c98060">
+<img width="1920" alt="dashboard-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/e243c63e-4a44-4625-a199-e60ab955cb1f">
 
 Для отображения дэшборда в корне проекта подготовлен файл **grafana-dashboard.json**
 
@@ -227,6 +233,7 @@ docker compose -f docker-compose.test.yaml exec test_web pytest
 Для этого необходимо получить токен для бота у BotFater в telegram, после чего сохранить токен в .env файл, а также указать chat_id администратора которому должны приходить уведомления в модуле **middleware.py**
 
 Пример вывода сообщений от бота:
-<img width="762" alt="telegram-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/1d2e92bc-a8ab-4031-8016-454c735eca2a">
+<img width="762" alt="telegram-example" src="https://github.com/krevedkin/fastapi_hotels/assets/70909877/a4177688-5834-4093-8ef8-cba8af7fdf54">
+
 
 
