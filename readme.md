@@ -147,9 +147,9 @@ docker compose -f docker-compose.test.yaml up
 
 Для запуска тестов использовать команду:
 ```
-docker compose -f docker-compose.test.yaml exec test_web test_web pytest
+docker compose -f docker-compose.test.yaml exec test_web pytest
 ```
-где **web** имя контейнера тестового контейнера **FastAPI**.
+где **test_web** имя тестового контейнера **FastAPI**.
 
 Для того чтобы не прописывать постоянно длинную команду можно создать таску в **VScode** например:
 
